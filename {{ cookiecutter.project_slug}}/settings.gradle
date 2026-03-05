@@ -1,0 +1,3 @@
+rootProject.name = '{{ cookiecutter.project_name }}'
+include '{{cookiecutter.artifact_id}}'
+include '{{cookiecutter.common_module}}'

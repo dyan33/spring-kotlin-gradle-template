@@ -1,0 +1,33 @@
+plugins {
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'org.jetbrains.kotlin.kapt'
+    id 'org.jetbrains.kotlin.plugin.spring'
+    id 'org.jetbrains.kotlin.plugin.noarg'
+}
+
+dependencies {
+    implementation project(':{{cookiecutter.common_module}}')
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation "com.github.lianjiatech:retrofit-spring-boot-starter"
+
+    //国密sm2加密
+    implementation 'org.bouncycastle:bcpkix-jdk18on'
+    implementation "cn.hutool:hutool-crypto"
+//    implementation 'com.alibaba:druid-spring-boot-starter'
+//    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'mysql:mysql-connector-java'
+
+}
+
+bootJar {
+    archiveFileName = "{{ cookiecutter.artifact_id }}-{{ cookiecutter.version }}.jar"
+}
+
+kapt {
+    keepJavacAnnotationProcessors = true
+}

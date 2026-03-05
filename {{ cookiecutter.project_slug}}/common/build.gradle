@@ -1,0 +1,4 @@
+dependencies {
+    // common 模块的依赖
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}

@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/test?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: test
+    password: test
+
+retrofit:
+  global-log:
+    log-strategy: body
+
+app:
+  properties:
+    - table: table_name
+      name: name
+      public_key: public_key
+      task_id: '30214'
+

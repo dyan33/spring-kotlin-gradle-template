@@ -1,0 +1,9 @@
+{
+  "project_name": "Spring Boot Kotlin Gradle Project",
+  "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '-').replace('_', '-') }}",
+  "project_description": "A Spring Boot CLI application using Gradle and Kotlin",
+  "group_id": "com.example",
+  "artifact_id": "cli-app",
+  "common_module": "common",
+  "version": "1.0.0"
+}

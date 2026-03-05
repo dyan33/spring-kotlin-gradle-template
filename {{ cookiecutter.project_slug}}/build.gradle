@@ -1,0 +1,64 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.9.25' apply false //kotlin编译插件
+    id 'org.jetbrains.kotlin.kapt' version '1.9.25' apply false //让 Kotlin 能用类似 Java 的 annotation processor
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.9.25' apply false //专门为 Spring 优化的 Kotlin 插件
+    id 'org.jetbrains.kotlin.plugin.noarg' version '1.9.25' apply false //为特定注解生成无参构造函数
+    id 'org.springframework.boot' version '2.7.18' apply false
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE' apply false
+}
+
+allprojects {
+    group = '{{ cookiecutter.group_id }}'
+    version = '1.0.0'
+
+    repositories {
+        maven { url "https://maven.aliyun.com/repository/central/" }
+        maven { url "https://maven.aliyun.com/repository/public/" }
+        maven { url "https://maven.aliyun.com/repository/spring/" }
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'kotlin'
+    apply plugin: 'io.spring.dependency-management'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    dependencyManagement {
+        dependencies {
+            dependency "com.alibaba:druid-spring-boot-starter:1.2.8"
+            dependency "com.github.lianjiatech:retrofit-spring-boot-starter:2.3.2"
+            dependency 'cn.hutool:hutool-crypto:5.8.1'
+            dependency 'org.bouncycastle:bcpkix-jdk18on:1.78.1'
+            dependency 'mysql:mysql-connector-java:8.0.26'
+        }
+    }
+
+    dependencies {
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+        implementation "org.jetbrains.kotlin:kotlin-reflect"
+        testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    }
+
+
+    tasks.withType(KotlinCompile).configureEach {
+        compilerOptions {
+            freeCompilerArgs = ['-Xjsr305=strict']
+            jvmTarget = JvmTarget.JVM_1_8
+        }
+
+    }
+
+    tasks.withType(Jar).tap {
+        configureEach {
+            duplicatesStrategy DuplicatesStrategy.EXCLUDE
+        }
+    }
+
+}
