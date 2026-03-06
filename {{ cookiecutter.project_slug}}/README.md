@@ -5,5 +5,5 @@
 ```shell
 ./gradlew --stop
 ./gradlew clean
-./gradlew -x test 'cli-app:build' --nodaemon
+./gradlew -x test ':{{cookiecutter.artifact_id}}:build' --nodaemon
 ```
