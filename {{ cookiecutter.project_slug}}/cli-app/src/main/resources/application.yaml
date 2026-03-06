@@ -8,6 +8,10 @@ retrofit:
   global-log:
     log-strategy: body
 
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 app:
   properties:
     - table: table_name
