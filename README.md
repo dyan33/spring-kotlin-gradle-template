@@ -15,7 +15,7 @@ copier copy <本仓库路径或 git 地址> my-project
 | `project_name` | 项目名 | Spring Boot Kotlin Gradle Project |
 | `language` | 项目语言：`java+kotlin`（混合）或 `java`（纯 Java） | java+kotlin |
 | `group_id` | 包名 / Maven groupId | com.example |
-| `artifact_id` | 应用模块名 / Maven artifactId | cli-app |
+| `artifact_id` | 应用模块名 / Maven artifactId | 随 `project_name` |
 | `version` | 项目版本 | 1.0.0 |
 
 ## language 选项
