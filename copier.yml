@@ -14,7 +14,7 @@ _envops:
 
 _tasks:
   # 任务字符串与模板文件共用 _envops 定界符（[[ ]]）
-  - "[[ _copier_python ]] [[ _copier_conf.src_path ]]/post_gen.py \"[[ language ]]\" \"[[ artifact_id ]]\" \"[[ group_id ]]\" \"[[ common_module ]]\""
+  - "[[ _copier_python ]] [[ _copier_conf.src_path ]]/post_gen.py \"[[ language ]]\" \"[[ artifact_id ]]\" \"[[ group_id ]]\""
 
 project_name:
   type: str
@@ -43,12 +43,68 @@ artifact_id:
   help: 应用模块名 / Maven artifactId
   default: cli-app
 
-common_module:
-  type: str
-  help: 公共模块名
-  default: common
-
 version:
   type: str
   help: 项目版本
   default: 1.0.0
+
+# 可选依赖（默认不引入；仅加依赖不改配置；版本按 Boot 2.7.18 / Java 8 适配）
+use_druid:
+  type: bool
+  help: Druid 数据库连接池（1.2.8）
+  default: false
+
+use_pagehelper:
+  type: bool
+  help: PageHelper 分页插件（pagehelper-spring-boot-starter 1.4.7）
+  default: false
+
+use_mybatis_plus:
+  type: bool
+  help: MyBatis-Plus（mybatis-plus-boot-starter 3.5.1）
+  default: false
+
+use_redisson:
+  type: bool
+  help: Redisson（Redis 客户端 3.19.0，已适配 Boot 2.7 的 spring-data 模块）
+  default: false
+
+use_tencent_cos:
+  type: bool
+  help: 腾讯云对象存储 COS（cos_api 5.6.72 + STS 临时密钥 3.0.8）
+  default: false
+
+use_aws_s3:
+  type: bool
+  help: AWS S3 对象存储（aws-java-sdk-s3/sts 1.12.261）
+  default: false
+
+use_easyexcel:
+  type: bool
+  help: EasyExcel（Excel 导入导出 3.1.1）
+  default: false
+
+use_validation:
+  type: bool
+  help: Bean Validation 参数校验（spring-boot-starter-validation，版本随 Boot BOM）
+  default: false
+
+use_knife4j:
+  type: bool
+  help: knife4j 接口文档（3.0.3，连带引入 spring-boot-starter-web；Boot 2.7 需配 ant_path_matcher）
+  default: false
+
+use_guava:
+  type: bool
+  help: Guava 工具库（31.1-jre）
+  default: false
+
+use_commons_io:
+  type: bool
+  help: commons-io（2.11.0）
+  default: false
+
+use_fastjson:
+  type: bool
+  help: fastjson（2.0.22，与已有 jackson 并存）
+  default: false

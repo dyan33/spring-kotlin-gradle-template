@@ -9,7 +9,6 @@ plugins {
 }
 
 dependencies {
-    implementation project(':[[ common_module ]]')
 [[% if language == 'java+kotlin' %]]
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 [[% endif %]]
@@ -22,10 +21,60 @@ dependencies {
     //国密sm2加密
     implementation 'org.bouncycastle:bcpkix-jdk18on'
     implementation "cn.hutool:hutool-crypto"
-//    implementation 'com.alibaba:druid-spring-boot-starter'
-//    implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'mysql:mysql-connector-java'
 
+[[% if use_druid %]]
+    // Druid 连接池
+    implementation 'com.alibaba:druid-spring-boot-starter'
+[[% endif %]]
+[[% if use_pagehelper %]]
+    // PageHelper 分页
+    implementation 'com.github.pagehelper:pagehelper-spring-boot-starter'
+[[% endif %]]
+[[% if use_mybatis_plus %]]
+    // MyBatis-Plus
+    implementation 'com.baomidou:mybatis-plus-boot-starter'
+[[% endif %]]
+[[% if use_redisson %]]
+    // Redisson（Redis），spring-data-27 匹配 Boot 2.7
+    implementation 'org.redisson:redisson-spring-boot-starter'
+    implementation 'org.redisson:redisson-spring-data-27'
+[[% endif %]]
+[[% if use_tencent_cos %]]
+    // 腾讯云 COS
+    implementation 'com.qcloud:cos_api'
+    implementation 'com.tencent.cloud:cos-sts-java'
+[[% endif %]]
+[[% if use_aws_s3 %]]
+    // AWS S3
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation 'com.amazonaws:aws-java-sdk-sts'
+[[% endif %]]
+[[% if use_easyexcel %]]
+    // EasyExcel
+    implementation 'com.alibaba:easyexcel'
+[[% endif %]]
+[[% if use_validation %]]
+    // Bean Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+[[% endif %]]
+[[% if use_knife4j %]]
+    // knife4j 接口文档（Boot 2.7 使用时需配 spring.mvc.pathmatch.matching-strategy=ant_path_matcher）
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.github.xiaoymin:knife4j-spring-boot-starter'
+[[% endif %]]
+[[% if use_guava %]]
+    // Guava
+    implementation 'com.google.guava:guava'
+[[% endif %]]
+[[% if use_commons_io %]]
+    // commons-io
+    implementation 'commons-io:commons-io'
+[[% endif %]]
+[[% if use_fastjson %]]
+    // fastjson
+    implementation 'com.alibaba:fastjson'
+[[% endif %]]
 }
 
 bootJar {

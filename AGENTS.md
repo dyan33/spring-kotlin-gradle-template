@@ -4,11 +4,10 @@
 
 ## 目录结构
 
-- `copier.yml` — 模板配置：问题定义（`project_name` / `language` / `group_id` / `artifact_id` / `common_module` / `version`，`language` 为 choice：`java+kotlin` 默认，`java` 纯 Java 零 Kotlin）、`_subdirectory: template`、`_version`（模板版本锚点）、`_tasks`
-- `post_gen.py` — 生成后处理脚本（由 `_tasks` 调用，cwd 为生成的项目目录）：按 `language` 保留一棵源码树、把源码从 `com/example/cli` 搬到 `group_id` 包路径、重命名模块。**必须保持幂等**——copier update 会重跑它
-- `template/` — 模板工程本体（`_subdirectory` 指向），多模块 Gradle 工程：
-  - `cli-app/` — Spring Boot CLI 应用模块（bootJar，依赖 common），源码为 `src/main/java` 与 `src/main/kotlin` **并行两棵树**（内容一一对应，靠 post_gen.py 二选一）
-  - `common/` — 公共模块（`api` 暴露 kotlin-stdlib）
+- `copier.yml` — 模板配置：问题定义（`project_name` / `language` / `group_id` / `artifact_id` / `version`，`language` 为 choice：`java+kotlin` 默认，`java` 纯 Java 零 Kotlin）、12 个可选依赖布尔问题（`use_druid` / `use_pagehelper` / `use_mybatis_plus` / `use_redisson` / `use_tencent_cos` / `use_aws_s3` / `use_easyexcel` / `use_validation` / `use_knife4j` / `use_guava` / `use_commons_io` / `use_fastjson`，默认全 false）、`_subdirectory: template`、`_version`（模板版本锚点）、`_tasks`
+- `post_gen.py` — 生成后处理脚本（由 `_tasks` 调用，cwd 为生成的项目目录）：按 `language` 保留一棵源码树，把源码从 `com/example/cli` 搬到 `group_id` 包路径，重命名 `cli-app` → `artifact_id`。**必须保持幂等**——copier update 会重跑它
+- `template/` — 模板工程本体（`_subdirectory` 指向），单应用模块 Gradle 工程：
+  - `cli-app/` — Spring Boot CLI 应用模块（bootJar），源码为 `src/main/java` 与 `src/main/kotlin` **并行两棵树**（内容一一对应，靠 post_gen.py 二选一）；`use_knife4j` 选项通过 jinja 条件目录段（`[[% if use_knife4j %]]config[[% endif %]]`）控制 SwaggerConfig 是否生成
   - 带 `.jinja` 后缀的文件参与渲染，其余文件原样复制
 
 ## 模板约定（copier）
@@ -16,6 +15,7 @@
 - 定界符：变量 `[[ x ]]`，语句块 `[[% if ... %]]` / `[[% endif %]]`；引用问题名**没有** `cookiecutter.` 前缀
 - 占位符只允许出现在 `.jinja` 文件中；新增含占位符的文件必须加 `.jinja` 后缀，否则 copier 原样复制、不渲染
 - `language` 条件统一写 `[[% if language == 'java+kotlin' %]]`；选 `java` 的生成物必须零 Kotlin 痕迹（无 Kotlin 插件、kapt、kotlin-stdlib、jackson-module-kotlin）
+- 可选依赖默认关闭、仅加依赖不改配置：新增一项需同时改三处——copier.yml 布尔问题、根 build.gradle.jinja 的 dependencyManagement 版本条目（Boot BOM 管版本的除外）、cli-app/build.gradle.jinja 的 implementation 条件块；版本以 Boot 2.7.18 / Java 8 兼容为准，不照搬参考项目
 
 ## 模板修改规则（重要）
 

@@ -1,0 +1,37 @@
+package [[ group_id ]].config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+
+/**
+ * Swagger / Knife4j 文档配置。
+ *
+ * <ul>
+ *   <li>{@code @Profile("dev", "test")}：仅在非生产环境创建 Docket（API 元数据 Bean）
+ *   <li>生产环境关闭文档 UI：通过 application-prod.yml 的 {@code knife4j.production: true}
+ *       （Knife4j 自动配置开关，禁用 /doc.html、/swagger-resources、api-docs 等资源）
+ *   <li>不要加 {@code @EnableKnife4j}：该注解会强制启用 Knife4j 并覆盖 knife4j.production 开关，
+ *       导致生产环境仍可访问文档
+ * </ul>
+ */
+@Configuration
+@Profile({"dev", "test"})
+public class SwaggerConfig {
+
+    @Bean
+    public Docket docket() {
+        return new Docket(DocumentationType.OAS_30)
+                .apiInfo(new ApiInfoBuilder().title("[[ artifact_id ]]").build())
+                .enable(true)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("[[ group_id ]]"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+}

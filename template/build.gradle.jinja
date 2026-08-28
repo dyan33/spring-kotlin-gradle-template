@@ -44,6 +44,41 @@ subprojects {
             dependency 'cn.hutool:hutool-crypto:5.8.1'
             dependency 'org.bouncycastle:bcpkix-jdk18on:1.78.1'
             dependency 'mysql:mysql-connector-java:8.0.26'
+[[% if use_pagehelper %]]
+            dependency 'com.github.pagehelper:pagehelper-spring-boot-starter:1.4.7'
+[[% endif %]]
+[[% if use_mybatis_plus %]]
+            dependency 'com.baomidou:mybatis-plus-boot-starter:3.5.1'
+[[% endif %]]
+[[% if use_redisson %]]
+            dependency("org.redisson:redisson-spring-boot-starter:3.19.0") {
+                exclude "org.redisson:redisson-spring-data-30"
+            }
+            dependency 'org.redisson:redisson-spring-data-27:3.19.0'
+[[% endif %]]
+[[% if use_tencent_cos %]]
+            dependency 'com.tencent.cloud:cos-sts-java:3.0.8'
+            dependency 'com.qcloud:cos_api:5.6.72'
+[[% endif %]]
+[[% if use_aws_s3 %]]
+            dependency 'com.amazonaws:aws-java-sdk-s3:1.12.261'
+            dependency 'com.amazonaws:aws-java-sdk-sts:1.12.261'
+[[% endif %]]
+[[% if use_easyexcel %]]
+            dependency 'com.alibaba:easyexcel:3.1.1'
+[[% endif %]]
+[[% if use_knife4j %]]
+            dependency 'com.github.xiaoymin:knife4j-spring-boot-starter:3.0.3'
+[[% endif %]]
+[[% if use_guava %]]
+            dependency 'com.google.guava:guava:31.1-jre'
+[[% endif %]]
+[[% if use_commons_io %]]
+            dependency 'commons-io:commons-io:2.11.0'
+[[% endif %]]
+[[% if use_fastjson %]]
+            dependency 'com.alibaba:fastjson:2.0.22'
+[[% endif %]]
         }
     }
 

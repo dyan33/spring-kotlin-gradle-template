@@ -16,13 +16,25 @@ copier copy <本仓库路径或 git 地址> my-project
 | `language` | 项目语言：`java+kotlin`（混合）或 `java`（纯 Java） | java+kotlin |
 | `group_id` | 包名 / Maven groupId | com.example |
 | `artifact_id` | 应用模块名 / Maven artifactId | cli-app |
-| `common_module` | 公共模块名 | common |
 | `version` | 项目版本 | 1.0.0 |
 
 ## language 选项
 
 - **java+kotlin**（默认）：生成 Kotlin 示例源码，构建脚本带完整 Kotlin 工具链（kotlin、kapt、jackson-module-kotlin 等），可自由混写 Java/Kotlin
 - **java**：生成纯 Java 示例源码（配置属性为 setter 风格），构建脚本零 Kotlin 痕迹——无 Kotlin 插件、无 kotlin-stdlib 依赖
+
+## 可选依赖
+
+创建时按需选择，默认全部关闭；仅引入依赖，不改动配置与示例代码。版本已按 Boot 2.7.18 / Java 8 适配：
+
+| 分组 | 选项 | 引入内容 |
+|---|---|---|
+| 数据层 | `use_druid` / `use_pagehelper` / `use_mybatis_plus` | Druid 连接池 / PageHelper 分页（1.4.7）/ MyBatis-Plus（3.5.1） |
+| 中间件与云服务 | `use_redisson` / `use_tencent_cos` / `use_aws_s3` | Redisson（3.19.0，已适配 Boot 2.7）/ 腾讯云 COS+STS / AWS S3+STS（1.12.261） |
+| 应用功能 | `use_easyexcel` / `use_validation` / `use_knife4j` | EasyExcel / Bean Validation / knife4j 接口文档（连带引入 web 栈） |
+| 工具库 | `use_guava` / `use_commons_io` / `use_fastjson` | Guava（31.1-jre）/ commons-io / fastjson |
+
+`use_knife4j` 会在 Boot 2.7 下需要 `spring.mvc.pathmatch.matching-strategy=ant_path_matcher` 配置方可启动文档，属使用时自行配置。
 
 ## 模板演进（copier update）
 
@@ -38,11 +50,10 @@ copier update --trust
 
 ```
 <project>/
-├── cli-app/          # Spring Boot CLI 应用模块（bootJar，依赖 common）
+├── cli-app/          # Spring Boot CLI 应用模块（bootJar，单模块工程）
 │   └── src/main/
 │       ├── java/     # language=java 时保留
 │       └── kotlin/   # language=java+kotlin 时保留
-├── common/           # 公共模块
 ├── build.gradle      # 根构建脚本，依赖版本集中在 dependencyManagement
 ├── settings.gradle
 ├── Makefile          # 构建快捷命令

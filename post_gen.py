@@ -1,13 +1,13 @@
 """生成后处理（由 copier.yml 的 _tasks 调用，cwd 为生成的项目目录）。
 
 必须保持幂等：copier update 会重跑本脚本，任何 mv/rm 都要有存在性守卫。
-用法：post_gen.py <language> <artifact_id> <group_id> <common_module>
+用法：post_gen.py <language> <artifact_id> <group_id>
 """
 import os
 import shutil
 import sys
 
-language, artifact_id, group_id, common_module = sys.argv[1:5]
+language, artifact_id, group_id = sys.argv[1:4]
 
 
 def merge_move(src: str, dst: str) -> None:
@@ -18,6 +18,7 @@ def merge_move(src: str, dst: str) -> None:
         os.rmdir(src)
     else:
         shutil.move(src, dst)
+
 
 # 两棵源码树并行维护，生成时必须只保留一棵，否则同名类冲突
 trees = {
@@ -45,5 +46,3 @@ if os.path.exists(src_pkg):
 # 模块改名
 if artifact_id != 'cli-app' and not os.path.exists(artifact_id):
     os.rename('cli-app', artifact_id)
-if common_module != 'common' and not os.path.exists(common_module):
-    os.rename('common', common_module)
