@@ -1,17 +1,21 @@
+[[% if language == 'java+kotlin' %]]
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+[[% endif %]]
 
 plugins {
+[[% if language == 'java+kotlin' %]]
     id 'org.jetbrains.kotlin.jvm' version '1.9.25' apply false //kotlin编译插件
     id 'org.jetbrains.kotlin.kapt' version '1.9.25' apply false //让 Kotlin 能用类似 Java 的 annotation processor
     id 'org.jetbrains.kotlin.plugin.spring' version '1.9.25' apply false //专门为 Spring 优化的 Kotlin 插件
     id 'org.jetbrains.kotlin.plugin.noarg' version '1.9.25' apply false //为特定注解生成无参构造函数
+[[% endif %]]
     id 'org.springframework.boot' version '2.7.18' apply false
     id 'io.spring.dependency-management' version '1.0.15.RELEASE' apply false
 }
 
 allprojects {
-    group = '{{ cookiecutter.group_id }}'
+    group = '[[ group_id ]]'
     version = '1.0.0'
 
     repositories {
@@ -24,7 +28,9 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+[[% if language == 'java+kotlin' %]]
     apply plugin: 'kotlin'
+[[% endif %]]
     apply plugin: 'io.spring.dependency-management'
 
     sourceCompatibility = 1.8
@@ -42,12 +48,15 @@ subprojects {
     }
 
     dependencies {
+[[% if language == 'java+kotlin' %]]
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
         implementation "org.jetbrains.kotlin:kotlin-reflect"
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
+[[% endif %]]
     }
 
 
+[[% if language == 'java+kotlin' %]]
     tasks.withType(KotlinCompile).configureEach {
         compilerOptions {
             freeCompilerArgs = ['-Xjsr305=strict']
@@ -55,6 +64,7 @@ subprojects {
         }
 
     }
+[[% endif %]]
 
     tasks.withType(Jar).tap {
         configureEach {

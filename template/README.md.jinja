@@ -1,0 +1,53 @@
+# [[ project_name ]]
+
+[[ project_description ]]
+
+## 项目结构
+
+多模块 Gradle 工程：
+
+- `[[ artifact_id ]]/` — Spring Boot CLI 应用模块（bootJar，依赖 `[[ common_module ]]`）
+- `[[ common_module ]]/` — 公共模块
+
+## 项目构建
+
+需 JDK 11。在项目根目录执行：
+
+```shell
+./gradlew --stop
+./gradlew clean
+./gradlew -x test ':[[ artifact_id ]]:build'
+```
+
+构建产物：`[[ artifact_id ]]/build/libs/[[ artifact_id ]]-[[ version ]].jar`，运行：
+
+```shell
+java -jar [[ artifact_id ]]/build/libs/[[ artifact_id ]]-[[ version ]].jar
+```
+
+> 模板默认无测试源码，构建命令统一 `-x test`；添加测试后可去掉该参数。
+
+## 技术栈
+
+- Spring Boot 2.7.18 / Gradle 7.6.6 / 目标 JDK 1.8
+[[% if language == 'java+kotlin' %]]
+- Kotlin 1.9.25（kotlin / kapt / jackson-module-kotlin 已配好，可自由混写 Java/Kotlin）
+[[% endif %]]
+- MyBatis（mybatis-spring-boot-starter）、MySQL、retrofit-spring-boot-starter
+- hutool-crypto + BouncyCastle（SM2 国密加密）
+- Maven 依赖走阿里云镜像，Gradle Wrapper 走腾讯镜像
+
+## 配置
+
+应用配置在 `[[ artifact_id ]]/src/main/resources/application.yaml`：
+
+- 数据源（MySQL）与 MyBatis 日志
+- `app.properties`：表名 / 名称 / 任务 ID / SM2 公钥，kebab-case 键绑定到 camelCase 字段
+
+## 模板更新
+
+本项目由 [copier](https://copier.readthedocs.io/) 生成，`.copier-answers.yml` 记录了生成参数（须提交入库）。模板更新后在本项目执行：
+
+```shell
+copier update --trust
+```

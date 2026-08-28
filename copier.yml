@@ -1,0 +1,54 @@
+# 模板配置（问题顺序即交互顺序）
+_subdirectory: template
+_version: 1.0.0
+
+# 定界符用 [[ ]] 家族（copier 默认是 {{ }} / {% %}，必须显式配置）
+_envops:
+  block_end_string: "%]]"
+  block_start_string: "[[%"
+  comment_end_string: "#]]"
+  comment_start_string: "[[#"
+  keep_trailing_newline: true
+  variable_end_string: "]]"
+  variable_start_string: "[["
+
+_tasks:
+  # 任务字符串与模板文件共用 _envops 定界符（[[ ]]）
+  - "[[ _copier_python ]] [[ _copier_conf.src_path ]]/post_gen.py \"[[ language ]]\" \"[[ artifact_id ]]\" \"[[ group_id ]]\" \"[[ common_module ]]\""
+
+project_name:
+  type: str
+  help: 项目名
+  default: Spring Boot Kotlin Gradle Project
+
+language:
+  type: str
+  help: 项目语言（java 为纯 Java 零 Kotlin，java+kotlin 可混写）
+  choices:
+    - java+kotlin
+    - java
+  default: java+kotlin
+
+project_description:
+  type: str
+  default: "A Spring Boot CLI application using Gradle[[% if language == 'java+kotlin' %]] and Kotlin[[% endif %]]"
+
+group_id:
+  type: str
+  help: 包名 / Maven groupId
+  default: com.example
+
+artifact_id:
+  type: str
+  help: 应用模块名 / Maven artifactId
+  default: cli-app
+
+common_module:
+  type: str
+  help: 公共模块名
+  default: common
+
+version:
+  type: str
+  help: 项目版本
+  default: 1.0.0
