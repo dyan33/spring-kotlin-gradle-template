@@ -31,10 +31,10 @@ copier copy <本仓库路径或 git 地址> my-project
 |---|---|---|
 | 数据层 | `use_druid` / `use_pagehelper` / `use_mybatis_plus` | Druid 连接池 / PageHelper 分页（1.4.7）/ MyBatis-Plus（3.5.1） |
 | 中间件与云服务 | `use_redisson` / `use_tencent_cos` / `use_aws_s3` | Redisson（3.19.0，已适配 Boot 2.7）/ 腾讯云 COS+STS / AWS S3+STS（1.12.261） |
-| 应用功能 | `use_easyexcel` / `use_validation` / `use_knife4j` | EasyExcel / Bean Validation / knife4j 接口文档（连带引入 web 栈） |
+| 应用功能 | `use_easyexcel` / `use_validation` / `use_web` | EasyExcel / Bean Validation / Web MVC（spring-boot-starter-web + WebMvcConfig JSON 定制 + knife4j 接口文档） |
 | 工具库 | `use_guava` / `use_commons_io` / `use_fastjson` | Guava（31.1-jre）/ commons-io / fastjson |
 
-`use_knife4j` 会在 Boot 2.7 下需要 `spring.mvc.pathmatch.matching-strategy=ant_path_matcher` 配置方可启动文档，属使用时自行配置。
+`use_web` 生成 `WebMvcConfig`（统一 JSON 序列化：`LocalDateTime → yyyy-MM-dd HH:mm:ss`、`LocalDate → yyyy-MM-dd`、忽略未知字段等），并连带引入 knife4j 接口文档；Boot 2.7 下启动文档需配 `spring.mvc.pathmatch.matching-strategy=ant_path_matcher`，属使用时自行配置。
 
 ## 模板演进（copier update）
 

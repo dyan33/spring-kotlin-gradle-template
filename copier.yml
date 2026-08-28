@@ -1,6 +1,6 @@
 # 模板配置（问题顺序即交互顺序）
 _subdirectory: template
-_version: 1.1.1
+_version: 1.2.0
 
 # 定界符用 [[ ]] 家族（copier 默认是 {{ }} / {% %}，必须显式配置）
 _envops:
@@ -89,9 +89,9 @@ use_validation:
   help: Bean Validation 参数校验（spring-boot-starter-validation，版本随 Boot BOM）
   default: false
 
-use_knife4j:
+use_web:
   type: bool
-  help: knife4j 接口文档（3.0.3，连带引入 spring-boot-starter-web；Boot 2.7 需配 ant_path_matcher）
+  help: Web MVC（spring-boot-starter-web + WebMvcConfig JSON 定制 + knife4j 接口文档 3.0.3；Boot 2.7 需配 ant_path_matcher）
   default: false
 
 use_guava:

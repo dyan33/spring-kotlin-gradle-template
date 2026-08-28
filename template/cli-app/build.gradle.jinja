@@ -58,8 +58,9 @@ dependencies {
     // Bean Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 [[% endif %]]
-[[% if use_knife4j %]]
-    // knife4j 接口文档（Boot 2.7 使用时需配 spring.mvc.pathmatch.matching-strategy=ant_path_matcher）
+[[% if use_web %]]
+    // Web MVC（WebMvcConfig：JSON 序列化统一）+ knife4j 接口文档
+    // Boot 2.7 使用 knife4j 时需配 spring.mvc.pathmatch.matching-strategy=ant_path_matcher
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.github.xiaoymin:knife4j-spring-boot-starter'
 [[% endif %]]

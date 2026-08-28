@@ -1,0 +1,49 @@
+package [[ group_id ]].config
+
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
+import org.springframework.context.annotation.Configuration
+import org.springframework.http.converter.HttpMessageConverter
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+/**
+ * Web MVC 配置：统一 JSON 序列化行为。
+ *
+ * - 循环引用不抛异常（FAIL_ON_EMPTY_BEANS 关闭）
+ * - 日期不写为时间戳
+ * - 反序列化忽略未知字段
+ * - java.time 统一格式：LocalDateTime → yyyy-MM-dd HH:mm:ss，LocalDate → yyyy-MM-dd
+ */
+@Configuration
+class WebMvcConfig : WebMvcConfigurer {
+
+    override fun configureMessageConverters(converters: MutableList<HttpMessageConverter<*>>) {
+        converters.forEach {
+            if (it is MappingJackson2HttpMessageConverter) {
+                val om = it.objectMapper
+                om.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+                om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                om.findAndRegisterModules()
+
+                val javaTimeModule = JavaTimeModule()
+                javaTimeModule.addSerializer(
+                    LocalDateTime::class.java,
+                    LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                )
+                javaTimeModule.addSerializer(
+                    LocalDate::class.java,
+                    LocalDateSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                )
+                om.registerModule(javaTimeModule)
+            }
+        }
+    }
+}
