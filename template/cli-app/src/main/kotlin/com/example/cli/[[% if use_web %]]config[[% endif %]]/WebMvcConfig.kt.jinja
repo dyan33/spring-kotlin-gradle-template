@@ -2,7 +2,7 @@ package [[ group_id ]].config
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import org.springframework.context.annotation.Configuration
@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter
 @Configuration
 class WebMvcConfig : WebMvcConfigurer {
 
-    override fun configureMessageConverters(converters: MutableList<HttpMessageConverter<*>>) {
+    override fun extendMessageConverters(converters: MutableList<HttpMessageConverter<*>>) {
         converters.forEach {
             if (it is MappingJackson2HttpMessageConverter) {
                 val om = it.objectMapper
@@ -33,7 +33,8 @@ class WebMvcConfig : WebMvcConfigurer {
                 om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 om.findAndRegisterModules()
 
-                val javaTimeModule = JavaTimeModule()
+                // 匿名 SimpleModule：typeId 唯一，避免与 Boot 已注册的 JavaTimeModule 去重而失效
+                val javaTimeModule = object : SimpleModule() {}
                 javaTimeModule.addSerializer(
                     LocalDateTime::class.java,
                     LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))

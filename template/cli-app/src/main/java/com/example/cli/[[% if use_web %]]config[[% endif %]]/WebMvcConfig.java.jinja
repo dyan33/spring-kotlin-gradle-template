@@ -3,7 +3,7 @@ package [[ group_id ]].config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +30,7 @@ import java.util.List;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         for (HttpMessageConverter<?> converter : converters) {
             if (converter instanceof MappingJackson2HttpMessageConverter) {
                 ObjectMapper om = ((MappingJackson2HttpMessageConverter) converter).getObjectMapper();
@@ -39,7 +39,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 om.findAndRegisterModules();
 
-                JavaTimeModule javaTimeModule = new JavaTimeModule();
+                // 匿名 SimpleModule：typeId 唯一，避免与 Boot 已注册的 JavaTimeModule 去重而失效
+                SimpleModule javaTimeModule = new SimpleModule() {};
                 javaTimeModule.addSerializer(LocalDateTime.class,
                         new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 javaTimeModule.addSerializer(LocalDate.class,
