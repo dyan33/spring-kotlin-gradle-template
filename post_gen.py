@@ -43,6 +43,6 @@ if os.path.exists(src_pkg):
     except OSError:
         pass
 
-# 模块改名
-if artifact_id != 'cli-app' and not os.path.exists(artifact_id):
+# 模块改名（空答案直接跳过，避免 rename 到空路径崩溃）
+if artifact_id and artifact_id != 'cli-app' and not os.path.exists(artifact_id):
     os.rename('cli-app', artifact_id)
