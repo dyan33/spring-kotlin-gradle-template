@@ -1,6 +1,6 @@
 # 模板配置（问题顺序即交互顺序）
 _subdirectory: template
-_version: 1.1.0
+_version: 1.1.1
 
 # 定界符用 [[ ]] 家族（copier 默认是 {{ }} / {% %}，必须显式配置）
 _envops:
@@ -41,7 +41,7 @@ group_id:
 artifact_id:
   type: str
   help: 应用模块名 / Maven artifactId
-  default: "[[ project_name ]]"
+  default: cli-app
 
 version:
   type: str
