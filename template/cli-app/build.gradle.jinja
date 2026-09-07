@@ -76,6 +76,11 @@ dependencies {
     // fastjson
     implementation 'com.alibaba:fastjson'
 [[% endif %]]
+[[% if language == 'java' and use_lombok %]]
+    // Lombok（仅 java 变体；版本由 Boot BOM 管理）
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+[[% endif %]]
 }
 
 bootJar {

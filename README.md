@@ -33,8 +33,11 @@ copier copy <本仓库路径或 git 地址> my-project
 | 中间件与云服务 | `use_redisson` / `use_tencent_cos` / `use_aws_s3` | Redisson（3.19.0，已适配 Boot 2.7）/ 腾讯云 COS+STS / AWS S3+STS（1.12.261） |
 | 应用功能 | `use_easyexcel` / `use_validation` / `use_web` | EasyExcel / Bean Validation / Web MVC（spring-boot-starter-web + WebMvcConfig JSON 定制 + knife4j 接口文档） |
 | 工具库 | `use_guava` / `use_commons_io` / `use_fastjson` | Guava（31.1-jre）/ commons-io / fastjson |
+| Java 增强 | `use_lombok` | Lombok（**仅 `language=java` 变体生效**，版本随 Boot BOM） |
 
 `use_web` 生成 `WebMvcConfig`（统一 JSON 序列化：`LocalDateTime → yyyy-MM-dd HH:mm:ss`、`LocalDate → yyyy-MM-dd`、忽略未知字段等），并连带引入 knife4j 接口文档；Boot 2.7 下启动文档需配 `spring.mvc.pathmatch.matching-strategy=ant_path_matcher`，属使用时自行配置。
+
+`use_lombok` 仅在 `language=java` 时生效（kotlin 变体生成的是纯 Kotlin 工程，Lombok 不适用）；以 `compileOnly + annotationProcessor` 方式接入，版本由 Boot BOM 管理。
 
 ## 模板演进（copier update）
 
