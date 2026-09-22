@@ -4,12 +4,17 @@
 
 ## 项目结构
 
+[[% if build_tool == 'gradle' %]]
 单模块 Gradle 工程，应用模块为 `[[ artifact_id ]]`（Spring Boot CLI，bootJar）。
+[[% else %]]
+单模块 Maven 工程（标准布局：`pom.xml` 与 `src/` 直接位于项目根）。
+[[% endif %]]
 
 ## 项目构建
 
 需 JDK 11。在项目根目录执行：
 
+[[% if build_tool == 'gradle' %]]
 ```shell
 ./gradlew --stop
 ./gradlew clean
@@ -21,18 +26,35 @@
 ```shell
 java -jar [[ artifact_id ]]/build/libs/[[ artifact_id ]]-[[ version ]].jar
 ```
+[[% else %]]
+```shell
+./mvnw --version
+./mvnw clean
+./mvnw -DskipTests package
+```
 
-> 模板默认无测试源码，构建命令统一 `-x test`；添加测试后可去掉该参数。
+构建产物：`target/[[ artifact_id ]]-[[ version ]].jar`，运行：
+
+```shell
+java -jar target/[[ artifact_id ]]-[[ version ]].jar
+```
+[[% endif %]]
+
+> 模板默认无测试源码，构建命令统一跳过测试；添加测试后可去掉对应参数。
 
 ## 技术栈
 
+[[% if build_tool == 'gradle' %]]
 - Spring Boot 2.7.18 / Gradle 7.6.6 / 目标 JDK 1.8
+[[% else %]]
+- Spring Boot 2.7.18 / Maven 3.8.8（Wrapper 随项目自带，发行版走腾讯镜像）/ 目标 JDK 1.8
+[[% endif %]]
 [[% if language == 'java+kotlin' %]]
 - Kotlin 1.9.25（kotlin / kapt / jackson-module-kotlin 已配好，可自由混写 Java/Kotlin）
 [[% endif %]]
 - MyBatis（mybatis-spring-boot-starter）、MySQL、retrofit-spring-boot-starter
 - hutool-crypto + BouncyCastle（SM2 国密加密）
-- Maven 依赖走阿里云镜像，Gradle Wrapper 走腾讯镜像
+- 依赖走阿里云镜像，构建工具发行版（Gradle / Maven Wrapper）走腾讯镜像
 
 ## 配置
 

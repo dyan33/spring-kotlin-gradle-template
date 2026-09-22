@@ -1,0 +1,36 @@
+package [[ group_id ]].result
+
+/**
+ * 统一响应结构：HTTP 恒 200，调用方以 ret 判定结果（0 成功，非 0 失败），
+ * ret 采用原 HTTP 状态码语义（400 参数/状态错误、500 系统异常），msg 为面向调用方的中文提示。
+ */
+open class BaseResult<T> {
+
+    var ret: Int = 0
+    var msg: String = ""
+    var data: T? = null
+
+    companion object {
+
+        @JvmStatic
+        fun <T> success(data: T?): BaseResult<T> =
+            BaseResult<T>().apply {
+                ret = ResultEnum.SUCCESS.code
+                msg = ResultEnum.SUCCESS.msg
+                this.data = data
+            }
+
+        @JvmStatic
+        fun success(): BaseResult<Void> = success(null)
+
+        @JvmStatic
+        fun <T> fail(code: Int, msg: String): BaseResult<T> =
+            BaseResult<T>().apply {
+                ret = code
+                this.msg = msg
+            }
+
+        @JvmStatic
+        fun fail(res: ResultEnum): BaseResult<Void> = fail(res.code, res.msg)
+    }
+}

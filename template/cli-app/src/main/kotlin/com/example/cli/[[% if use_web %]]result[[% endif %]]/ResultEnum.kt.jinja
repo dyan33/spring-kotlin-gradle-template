@@ -1,0 +1,11 @@
+package [[ group_id ]].result
+
+/**
+ * 统一响应码枚举：0 成功，非 0 失败。业务扩展码在 1000+ 区段自行追加。
+ */
+enum class ResultEnum(val code: Int, val msg: String) {
+
+    SUCCESS(0, "操作成功"),
+    FAIL(1, "操作失败"),
+    PARAMS_ERROR(1001, "参数不合法"),
+}

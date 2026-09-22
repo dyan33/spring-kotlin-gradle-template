@@ -1,0 +1,66 @@
+package [[ group_id ]].config
+
+import [[ group_id ]].result.BaseResult
+
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.validation.BindException
+import org.springframework.web.bind.MissingServletRequestParameterException
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.RestControllerAdvice
+[[% if use_validation %]]
+import javax.validation.ConstraintViolationException
+[[% endif %]]
+
+/**
+ * 全局异常处理：HTTP 恒 200，统一 [BaseResult] 结构（ret=0 成功、非 0 失败），
+ * ret 采用原 HTTP 状态码语义（400 参数/状态错误、500 系统异常），msg 为面向调用方的中文提示。
+ */
+@RestControllerAdvice
+class GlobalExceptionHandler {
+
+    private val log: Logger = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
+
+    /**
+     * 业务/状态错误：Service 层守卫式校验（org.springframework.util.Assert）抛出的 IAE/ISE。
+     */
+    @ExceptionHandler(IllegalArgumentException::class, IllegalStateException::class)
+    fun businessError(e: Exception): BaseResult<Void> =
+        BaseResult.fail(400, e.message ?: "参数错误")
+
+    /**
+     * 请求体校验失败（@Validated @RequestBody 触发；MethodArgumentNotValidException 为其子类）。
+     */
+    @ExceptionHandler(BindException::class)
+    fun invalidBody(e: BindException): BaseResult<Void> {
+        val msg = e.bindingResult.fieldErrors.joinToString("；") { it.defaultMessage ?: "" }
+        return BaseResult.fail(400, msg)
+    }
+[[% if use_validation %]]
+
+    /**
+     * GET 参数/路径变量校验失败（Controller 类级 @Validated 触发）。
+     */
+    @ExceptionHandler(ConstraintViolationException::class)
+    fun invalidParam(e: ConstraintViolationException): BaseResult<Void> {
+        val msg = e.constraintViolations.joinToString("；") { it.message }
+        return BaseResult.fail(400, msg)
+    }
+[[% endif %]]
+
+    /**
+     * 必填请求参数缺失（@RequestParam 缺参，发生在绑定阶段、先于校验）。
+     */
+    @ExceptionHandler(MissingServletRequestParameterException::class)
+    fun missingParam(e: MissingServletRequestParameterException): BaseResult<Void> =
+        BaseResult.fail(400, "缺少必填参数: ${e.parameterName}")
+
+    /**
+     * 兜底：未预期的系统异常，log.error 留痕。
+     */
+    @ExceptionHandler(Exception::class)
+    fun unexpectedError(e: Exception): BaseResult<Void> {
+        log.error("接口处理异常", e)
+        return BaseResult.fail(500, "系统异常: ${e.message}")
+    }
+}

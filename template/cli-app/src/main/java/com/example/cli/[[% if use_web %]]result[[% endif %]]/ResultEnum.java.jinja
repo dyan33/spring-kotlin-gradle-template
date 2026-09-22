@@ -1,0 +1,28 @@
+package [[ group_id ]].result;
+
+/**
+ * 统一响应码枚举：0 成功，非 0 失败。业务扩展码在 1000+ 区段自行追加。
+ */
+public enum ResultEnum {
+
+    SUCCESS(0, "操作成功"),
+    FAIL(1, "操作失败"),
+    PARAMS_ERROR(1001, "参数不合法"),
+    ;
+
+    private final int code;
+    private final String msg;
+
+    ResultEnum(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+}

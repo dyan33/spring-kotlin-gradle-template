@@ -1,0 +1,74 @@
+# [[ project_name ]] 开发约定
+
+[[ project_description ]]
+
+> 本文件由模板生成，约束本项目的通用 Spring Boot 规则；团队演进项目时同步维护。
+
+## 技术栈与硬约束
+
+- Spring Boot 2.7.18 / 目标 JVM 1.8
+[[% if build_tool == 'gradle' %]]
+- Gradle 7.6.6（**Groovy DSL**，`build.gradle` 不是 `.kts`）；依赖版本统一在根 `build.gradle` 的 `dependencyManagement` 声明，子模块依赖不写版本号
+[[% else %]]
+- Maven 3.8.8（Wrapper 随项目自带，发行版走腾讯镜像）；依赖版本由 `spring-boot-starter-parent` BOM 与根 `pom.xml` 统一管理
+[[% endif %]]
+- **禁止使用 Java 8 之后的语法与 API**：无 record、无 switch 表达式、无 `var` 局部变量推断、无 Text Block
+- 新增依赖版本以 Boot 2.7.18 / Java 8 兼容为准
+- 仓库走阿里云镜像（central/public/spring），构建工具发行版（Gradle / Maven Wrapper）走腾讯镜像；新增仓库保持国内镜像优先
+[[% if build_tool == 'gradle' %]]
+- 构建：`./gradlew --stop` → `./gradlew clean` → `./gradlew -x test ':[[ artifact_id ]]:build'`（需 JDK 11）
+[[% else %]]
+- 构建：`./mvnw clean` → `./mvnw -DskipTests package`（需 JDK 11；首次运行会自动下载 Maven 发行版）
+[[% endif %]]
+
+## 包结构约定
+
+- 根包 `[[ group_id ]]` 下只放启动类与横切包；横切包（`config` / `web` / `result`）零业务模块依赖
+- 业务功能按模块自包含：`<module>/{controller,service,mapper,entity,dto}`；模块专属配置类放模块内 `config` 子包，不下沉横切包
+
+## Service 层守卫式校验
+
+- Service 入参与状态守卫统一用 `org.springframework.util.Assert`（`hasText` / `notNull` / `isTrue` / `state`），**不写 `if (…) throw new IllegalArgumentException(…)` 样板**
+- 断言消息用面向调用方的中文；IAE / ISE 由全局异常处理器统一收口为 400
+- 自定义业务异常、catch 后转译重抛不适用本约定
+[[% if use_validation %]]
+
+## 参数校验约定
+
+- 请求 DTO 字段标注解并写**中文 message**：`@NotNull` / `@NotBlank` / `@Size` / `@Pattern` / `@Min` / `@Max`
+- 嵌套对象加 `@Valid` 级联校验；集合元素约束写容器元素注解（如 `List<@NotBlank String>`）
+- Controller **类级**加 `@Validated`（GET 参数/路径变量校验才会生效）；请求体统一 `@Validated @RequestBody`（全项目用 `@Validated`，不用 `@Valid`）
+- GET 查询参数直接在参数上标校验注解；校验失败由全局异常处理器收口为 400 + 中文提示（多字段用「；」拼接）
+[[% endif %]]
+[[% if use_web %]]
+
+## 统一响应约定
+
+- Controller 返回体统一 `BaseResult`（`ret` / `msg` / `data`，位于 `result` 包）：有数据 `BaseResult.success(data)`，无返回值 `BaseResult.success()`
+- **HTTP 恒 200**：调用方以 `ret` 判定结果（0 成功），不判 HTTP 状态码；`ret` 取原 HTTP 码语义——400 参数/状态错误、500 系统异常
+- 分页返回统一 `PageResult.success(...)`，data 固定结构 `{current, size, pages, total, hasNext, records}`
+- 全局异常处理（`@RestControllerAdvice`）已收口：`Assert` 断言 IAE/ISE → 400；请求体校验失败 → 400（多字段「；」拼接）；[[% if use_validation %]]GET 参数校验失败 → 400；[[% endif %]]缺参 → 400（`缺少必填参数: xxx`）；兜底异常 → 500 并 `log.error` 留痕
+
+## Swagger / Knife4j 文档规则
+
+- Controller 类 `@Api(tags = "模块中文名")`——**tags 禁含半角 `/`**（knife4j 前端以 tag 名作菜单路由 key，含 `/` 会导致分组点击后接口渲染不出）
+- 方法 `@ApiOperation("简短名称")`，口径/破坏性说明写 `notes`；路径参数加 `@ApiParam(value = "...", required = true)`
+- DTO/实体：类 `@ApiModel(description = "...")`，字段 `@ApiModelProperty(value = "...", required = ..., example = "...")`——对外字段全部补中文说明
+- `SwaggerConfig` 已按 `@Profile("dev", "test")` 隔离：生产环境通过 `knife4j.production: true` 关闭文档 UI；**不要加 `@EnableKnife4j`**（会覆盖 production 开关）
+- Boot 2.7 使用 knife4j 需配 `spring.mvc.pathmatch.matching-strategy: ant_path_matcher`
+[[% endif %]]
+[[% if use_lombok and language == 'java' %]]
+
+## Lombok 约定
+
+- 实体/DTO/VO 用 `@Data`；超大 JSON 字段加 `@ToString.Exclude`
+- Service/Controller 用 `@RequiredArgsConstructor + @Slf4j`，依赖字段全部 `private final` 构造注入
+- 带描述字段的枚举用 `@Getter + @RequiredArgsConstructor`，实现接口的方法手写（Lombok 不生成 `@Override` 方法）
+[[% endif %]]
+[[% if use_mybatis_plus %]]
+
+## MyBatis-Plus 避坑
+
+- MP 3.5.1 使用 `IEnum` 枚举必须显式配 `mybatis-plus.type-enums-package: [[ group_id ]]`（扫描不到则枚举不按枚举值转换）
+- 实体类加 `@TableName("表名")`；分页查询需分页插件配置类（`MybatisPlusConfig`）
+[[% endif %]]

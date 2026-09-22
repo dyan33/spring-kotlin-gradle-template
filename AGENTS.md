@@ -4,11 +4,12 @@
 
 ## 目录结构
 
-- `copier.yml` — 模板配置：问题定义（`project_name` / `language` / `group_id` / `artifact_id` / `version`，`language` 为 choice：`java+kotlin` 默认，`java` 纯 Java 零 Kotlin）、13 个可选依赖布尔问题（`use_druid` / `use_pagehelper` / `use_mybatis_plus` / `use_redisson` / `use_tencent_cos` / `use_aws_s3` / `use_easyexcel` / `use_validation` / `use_web` / `use_guava` / `use_commons_io` / `use_fastjson` / `use_lombok`，默认全 false）、`_subdirectory: template`、`_version`（模板版本锚点）、`_tasks`
+- `copier.yml` — 模板配置：问题定义（`project_name` / `language` / `build_tool` / `group_id` / `artifact_id` / `version`，`language` 为 choice：`java+kotlin` 默认，`java` 纯 Java 零 Kotlin；`build_tool` 为 choice：`gradle` 默认，`maven` 生成 pom.xml + mvnw 标准布局）、13 个可选依赖布尔问题（`use_druid` / `use_pagehelper` / `use_mybatis_plus` / `use_redisson` / `use_tencent_cos` / `use_aws_s3` / `use_easyexcel` / `use_validation` / `use_web` / `use_guava` / `use_commons_io` / `use_fastjson` / `use_lombok`，默认全 false）、`_subdirectory: template`、`_version`（模板版本锚点）、`_tasks`
 - `post_gen.py` — 生成后处理脚本（由 `_tasks` 调用，cwd 为生成的项目目录）：按 `language` 保留一棵源码树，把源码从 `com/example/cli` 搬到 `group_id` 包路径，重命名 `cli-app` → `artifact_id`。**必须保持幂等**——copier update 会重跑它
 - `template/` — 模板工程本体（`_subdirectory` 指向），单应用模块 Gradle 工程：
-  - `cli-app/` — Spring Boot CLI 应用模块（bootJar），源码为 `src/main/java` 与 `src/main/kotlin` **并行两棵树**（内容一一对应，靠 post_gen.py 二选一）；`use_web` 选项通过 jinja 条件目录段（`[[% if use_web %]]config[[% endif %]]`）控制 WebMvcConfig + SwaggerConfig 是否生成
+  - `cli-app/` — Spring Boot CLI 应用模块（bootJar），源码为 `src/main/java` 与 `src/main/kotlin` **并行两棵树**（内容一一对应，靠 post_gen.py 二选一）；`use_web` 选项通过 jinja 条件目录段（`[[% if use_web %]]config[[% endif %]]` / `[[% if use_web %]]result[[% endif %]]`）控制 WebMvcConfig + SwaggerConfig + GlobalExceptionHandler（config）与 BaseResult/PageResult/ResultEnum（result）是否生成
   - 带 `.jinja` 后缀的文件参与渲染，其余文件原样复制
+- `template/AGENTS.md.jinja` — 生成项目根的 AI 约束文档（技术栈硬约束、包结构、守卫式校验恒出现；校验/响应与异常/Swagger/Lombok/MP 节按对应 `use_*` 条件化）。**新增模板能力时必须同步补对应规则节**
 
 ## 模板约定（copier）
 

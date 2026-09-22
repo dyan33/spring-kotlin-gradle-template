@@ -1,13 +1,13 @@
 """生成后处理（由 copier.yml 的 _tasks 调用，cwd 为生成的项目目录）。
 
 必须保持幂等：copier update 会重跑本脚本，任何 mv/rm 都要有存在性守卫。
-用法：post_gen.py <language> <artifact_id> <group_id>
+用法：post_gen.py <language> <artifact_id> <group_id> <build_tool>
 """
 import os
 import shutil
 import sys
 
-language, artifact_id, group_id = sys.argv[1:4]
+language, artifact_id, group_id, build_tool = sys.argv[1:5]
 
 
 def merge_move(src: str, dst: str) -> None:
@@ -43,6 +43,13 @@ if os.path.exists(src_pkg):
     except OSError:
         pass
 
-# 模块改名（空答案直接跳过，避免 rename 到空路径崩溃）
-if artifact_id and artifact_id != 'cli-app' and not os.path.exists(artifact_id):
-    os.rename('cli-app', artifact_id)
+# 布局收口：gradle 改名模块目录，maven 上提为根 src 标准布局
+if build_tool == 'maven':
+    if os.path.exists(os.path.join('cli-app', 'src')) and not os.path.exists('src'):
+        os.rename(os.path.join('cli-app', 'src'), 'src')
+    if os.path.exists('cli-app') and not os.listdir('cli-app'):
+        os.rmdir('cli-app')
+else:
+    # 模块改名（空答案直接跳过，避免 rename 到空路径崩溃）
+    if artifact_id and artifact_id != 'cli-app' and not os.path.exists(artifact_id):
+        os.rename('cli-app', artifact_id)

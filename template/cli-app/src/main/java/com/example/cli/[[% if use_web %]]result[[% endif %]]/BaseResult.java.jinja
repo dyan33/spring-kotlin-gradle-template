@@ -1,0 +1,66 @@
+package [[ group_id ]].result;
+[[% if use_lombok %]]
+
+import lombok.Data;
+[[% endif %]]
+
+/**
+ * 统一响应结构：HTTP 恒 200，调用方以 ret 判定结果（0 成功，非 0 失败），
+ * ret 采用原 HTTP 状态码语义（400 参数/状态错误、500 系统异常），msg 为面向调用方的中文提示。
+ */
+[[% if use_lombok %]]
+@Data
+[[% endif %]]
+public class BaseResult<T> {
+
+    private int ret;
+    private String msg;
+    private T data;
+
+    public static <T> BaseResult<T> success(T data) {
+        BaseResult<T> response = new BaseResult<>();
+        response.setRet(ResultEnum.SUCCESS.getCode());
+        response.setMsg(ResultEnum.SUCCESS.getMsg());
+        response.setData(data);
+        return response;
+    }
+
+    public static BaseResult<Void> success() {
+        return success(null);
+    }
+
+    public static <T> BaseResult<T> fail(int code, String msg) {
+        BaseResult<T> response = new BaseResult<>();
+        response.setRet(code);
+        response.setMsg(msg);
+        return response;
+    }
+
+    public static BaseResult<Void> fail(ResultEnum res) {
+        return fail(res.getCode(), res.getMsg());
+    }
+
+    public int getRet() {
+        return ret;
+    }
+
+    public void setRet(int ret) {
+        this.ret = ret;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+}

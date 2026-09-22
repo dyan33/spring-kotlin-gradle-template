@@ -1,0 +1,59 @@
+package [[ group_id ]].result
+[[% if use_mybatis_plus %]]
+
+import com.baomidou.mybatisplus.core.metadata.IPage
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page
+[[% endif %]]
+
+/**
+ * 分页响应：data 固定为 [PageVo] 结构（current/size/pages/total/hasNext/records）。
+ */
+class PageResult<T> : BaseResult<PageResult.PageVo<T>>() {
+
+    companion object {
+
+        /**
+         * 基础工厂：手工分页参数组装（不依赖任何分页组件）。
+         */
+        @JvmStatic
+        fun <T> success(records: List<T>, current: Long, size: Long, total: Long): PageResult<T> {
+            val response = PageResult<T>()
+            response.ret = ResultEnum.SUCCESS.code
+            response.msg = ResultEnum.SUCCESS.msg
+            response.data = PageVo(
+                current = current,
+                size = size,
+                pages = if (size == 0L) 0L else (total + size - 1) / size,
+                total = total,
+                hasNext = current * size < total,
+                records = records,
+            )
+            return response
+        }
+[[% if use_mybatis_plus %]]
+
+        /**
+         * MyBatis-Plus Page 直接包装。
+         */
+        @JvmStatic
+        fun <T> success(source: Page<T>): PageResult<T> =
+            success(source.records, source.current, source.size, source.total)
+
+        /**
+         * MyBatis-Plus IPage + 实体转 VO（转换器传 lambda）。
+         */
+        @JvmStatic
+        fun <T, R> success(source: IPage<T>, transfer: (T) -> R): PageResult<R> =
+            success(source.records.map(transfer), source.current, source.size, source.total)
+[[% endif %]]
+    }
+
+    data class PageVo<T>(
+        var current: Long = 0,
+        var size: Long = 0,
+        var pages: Long = 0,
+        var total: Long = 0,
+        var hasNext: Boolean = false,
+        var records: List<T> = emptyList(),
+    )
+}

@@ -1,6 +1,6 @@
 # 模板配置（问题顺序即交互顺序）
 _subdirectory: template
-_version: 1.3.1
+_version: 1.4.0
 
 # 定界符用 [[ ]] 家族（copier 默认是 {{ }} / {% %}，必须显式配置）
 _envops:
@@ -14,7 +14,7 @@ _envops:
 
 _tasks:
   # 任务字符串与模板文件共用 _envops 定界符（[[ ]]）
-  - "[[ _copier_python ]] [[ _copier_conf.src_path ]]/post_gen.py \"[[ language ]]\" \"[[ artifact_id ]]\" \"[[ group_id ]]\""
+  - "[[ _copier_python ]] [[ _copier_conf.src_path ]]/post_gen.py \"[[ language ]]\" \"[[ artifact_id ]]\" \"[[ group_id ]]\" \"[[ build_tool ]]\""
 
 project_name:
   type: str
@@ -28,6 +28,14 @@ language:
     - java+kotlin
     - java
   default: java+kotlin
+
+build_tool:
+  type: str
+  help: 构建工具（maven 生成 pom.xml + mvnw 的标准单模块布局）
+  choices:
+    - gradle
+    - maven
+  default: gradle
 
 project_description:
   type: str

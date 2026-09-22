@@ -1,6 +1,6 @@
 # spring boot 项目模板
 
-基于 [copier](https://copier.readthedocs.io/) 的 Spring Boot 项目模板，生成 Gradle 多模块 CLI 工程，支持 Java 或 Java+Kotlin 混合开发。
+基于 [copier](https://copier.readthedocs.io/) 的 Spring Boot 项目模板，生成单模块 CLI 工程，支持 **Gradle / Maven 双构建工具**与 Java 或 Java+Kotlin 混合开发。
 
 ## 创建项目
 
@@ -14,6 +14,7 @@ copier copy <本仓库路径或 git 地址> my-project
 |---|---|---|
 | `project_name` | 项目名 | Spring Boot Kotlin Gradle Project |
 | `language` | 项目语言：`java+kotlin`（混合）或 `java`（纯 Java） | java+kotlin |
+| `build_tool` | 构建工具：`gradle`（Gradle 7.6.6 Wrapper）或 `maven`（Maven 3.8.8 Wrapper + pom.xml 标准布局） | gradle |
 | `group_id` | 包名 / Maven groupId | com.example |
 | `artifact_id` | 应用模块名 / Maven artifactId | 随 `project_name` |
 | `version` | 项目版本 | 1.0.0 |
@@ -60,6 +61,7 @@ copier update --trust
 ├── build.gradle      # 根构建脚本，依赖版本集中在 dependencyManagement
 ├── settings.gradle
 ├── Makefile          # 构建快捷命令
+├── AGENTS.md         # 开发约定（技术栈硬约束 + 按所选能力条件化的规则章节）
 └── .copier-answers.yml
 ```
 

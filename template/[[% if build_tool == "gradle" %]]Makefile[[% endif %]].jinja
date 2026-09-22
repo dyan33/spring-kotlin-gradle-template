@@ -1,0 +1,4 @@
+build_[[ artifact_id ]]:
+	./gradlew --stop ;\
+	./gradlew clean	;\
+	./gradlew -x test ':[[ artifact_id ]]:build' ;\
